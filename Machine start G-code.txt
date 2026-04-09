@@ -1,0 +1,25 @@
+M140 S0
+M104 S0 
+; Start the internal macro
+START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single]
+
+; -- Added to try and force the default bed mesh to load --
+M400 ; Wait for macro to finish all moves
+BED_MESH_PROFILE LOAD="default" ; Force load your saved leveling mesh
+; SET_GCODE_OFFSET Z=-0.05 ; <--- UNCOMMENT and adjust this to 'lock in' your Z-height
+
+T[initial_no_support_extruder]
+M104 S[nozzle_temperature_initial_layer]
+M204 S2000
+G1 Z3 F600
+M83
+G1 Y150 F12000
+G1 X0 F12000
+G1 Z0.2 F600
+G1 X0 Y150 F6000
+G1 E0.8 F300
+; Purge line with volumetric calculation
+G1 X0 Y0 E9 F{filament_max_volumetric_speed[initial_extruder]/0.3*60}
+G1 X150 Y0 E9 F{filament_max_volumetric_speed[initial_extruder]/0.3*60}
+G92 E0
+G1 Z1 F600
